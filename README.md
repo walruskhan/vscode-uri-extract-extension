@@ -99,8 +99,3 @@ git tag -f release         # move the local tag to HEAD
 git push origin release    # push the updated tag
 ```
 
-### Publishing to the VS Code Marketplace
-
-Add a `VSCE_PAT` secret to the repository (Settings → Secrets → Actions) containing a Personal Access Token from the [Visual Studio Marketplace publisher portal](https://marketplace.visualstudio.com/manage). Also add a `publisher` field to `package.json` matching your publisher ID.
-
-When `VSCE_PAT` is present the release workflow will publish automatically after creating the GitHub Release.

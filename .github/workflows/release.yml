@@ -11,7 +11,7 @@ on:
 
 jobs:
   release:
-    name: Test and publish
+    name: Test and release
     runs-on: ubuntu-latest
     permissions:
       contents: write  # required to create a GitHub Release
@@ -39,19 +39,18 @@ jobs:
       - name: Package extension
         run: pnpm exec vsce package --no-dependencies
 
+      - name: Create source zip
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git archive --format=zip HEAD -o "vscode-uri-extract-${VERSION}.zip"
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          VSIX=$(ls *.vsix)
           gh release create "release-${VERSION}" \
             --title "v${VERSION}" \
             --notes "Release v${VERSION}" \
-            "$VSIX"
-
-      - name: Publish to VS Code Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: pnpm exec vsce publish --pat "$VSCE_PAT" --no-dependencies
+            "vscode-uri-extract-${VERSION}.vsix" \
+            "vscode-uri-extract-${VERSION}.zip"
