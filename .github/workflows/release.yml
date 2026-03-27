@@ -1,13 +1,11 @@
 name: Release
 
-# Trigger by pushing the 'release' tag to master:
-#   git tag release && git push origin release
-# To re-release, delete the old tag first:
-#   git push origin :release && git tag -f release && git push origin release
+# Trigger by pushing a versioned release tag, e.g.:
+#   git tag release-2026-03-27-A && git push origin release-2026-03-27-A
 on:
   push:
     tags:
-      - release
+      - 'release-*'
 
 jobs:
   release:
@@ -48,9 +46,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          TAG="${{ github.ref_name }}"
           VERSION=$(node -p "require('./package.json').version")
-          gh release create "release-${VERSION}" \
-            --title "v${VERSION}" \
-            --notes "Release v${VERSION}" \
+          gh release create "${TAG}" \
+            --title "${TAG}" \
+            --notes "Release ${TAG}" \
             "vscode-uri-extract-${VERSION}.vsix" \
             "vscode-uri-extract-${VERSION}.zip"
